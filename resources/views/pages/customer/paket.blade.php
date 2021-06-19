@@ -48,29 +48,29 @@
                                 </div>
                                 <div class="prd-bottom">
                                     @if($paket->for_use == 'non-member')
-                                    <a href="" class="social-info">
+                                    <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
                                         <span class="ti-bag"></span>
                                         <p class="hover-text">Booking</p>
                                     </a>
-                                    <a href="" class="social-info">
+                                    <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
                                         <span class="lnr lnr-move"></span>
                                         <p class="hover-text">Lihat Detail</p>
                                     </a>
                                     @elseif($paket->for_use == 'member')
-                                    <a href="" class="social-info">
+                                    <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
                                         <span class="ti-bag"></span>
                                         <p class="hover-text">Member</p>
                                     </a>
-                                    <a href="" class="social-info">
+                                    <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
                                         <span class="lnr lnr-move"></span>
                                         <p class="hover-text">Lihat Detail</p>
                                     </a>
                                     @else
-                                    <a href="" class="social-info">
+                                    <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
                                         <span class="ti-bag"></span>
                                         <p class="hover-text">Pelatihan</p>
                                     </a>
-                                    <a href="" class="social-info">
+                                    <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
                                         <span class="lnr lnr-move"></span>
                                         <p class="hover-text">Lihat Detail</p>
                                     </a>

@@ -10,16 +10,69 @@
 	<div class="card">
 		<div class="card-header">
 			<div class="card-title">
-				<a href="{{ route('admin.booking.index') }}" class="{{ $is_trash ? 'text-success':'text-muted' }}"> Semua
-					<span class="badge badge-pill badge-info">{{ $booking_count }}</span>
-				</a>
-				&nbsp; | &nbsp;
-				<a href="{{ route('admin.booking.index') }}?status=trash" class="{{ $is_trash ? 'text-muted':'text-danger' }}">
-					Sampah
-					<span class="badge badge-pill badge-danger">{{ $trash_count }}</span>
-				</a>
-				<div class="float-right">
-					<a href="{{ route('admin.booking.create') }}" class="btn btn-purple">Booking Baru</a>
+				<div class="row">
+					<div class="col-sm-12">
+						<a href="{{ route('admin.booking.index') }}?status=baru&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'baru' || $status == '' ? 'text-muted':'text-primary' }}"> Booking Baru
+							<span class="badge badge-pill {{ $status == 'baru' || $status == '' ? 'badge-primary' : 'bg-gray' }}">{{ $booking_count }}</span>
+						</a>
+						&nbsp; | &nbsp;
+						<a href="{{ route('admin.booking.index') }}?status=terima&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'terima' ? 'text-muted':'text-warning' }}">
+							Booking Terima
+							<span class="badge badge-pill {{ $status == 'terima' ? 'badge-warning' : 'bg-gray' }}">{{ $terima_count }}</span>
+						</a>
+						&nbsp; | &nbsp;
+						<a href="{{ route('admin.booking.index') }}?status=selesai&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'selesai' ? 'text-muted':'text-success' }}">
+							Booking Selesai
+							<span class="badge badge-pill {{ $status == 'selesai' ? 'badge-success' : 'bg-gray' }}">{{ $selesai_count }}</span>
+						</a>
+						&nbsp; | &nbsp;
+						<a href="{{ route('admin.booking.index') }}?status=cancel&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'cancel' ? 'text-muted':'text-purple' }}">
+							Cancel
+							<span class="badge badge-pill {{ $status == 'cancel' ? 'badge-purple' : 'bg-gray' }}">{{ $cancel_count }}</span>
+						</a>
+						&nbsp; | &nbsp;
+						<a href="{{ route('admin.booking.index') }}?status=trash&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'trash' ? 'text-muted':'text-danger' }}">
+							Sampah
+							<span class="badge badge-pill {{ $status == 'trash' ? 'badge-danger' : 'bg-gray' }}">{{ $trash_count }}</span>
+						</a>
+					</div>
+					<div class="col-sm-4 d-block mt-3">
+						<form action="" method="GET">
+							<input type="hidden" name="status" value="{{ $status }}">
+							<div class="row">
+								<div class="col-sm-4">
+									<select class="custom-select custom-select-sm" name="bulan">
+										<option @if($bulan=='01') selected @endif value="01">Januari</option>
+										<option @if($bulan=='02') selected @endif value="02">Februari</option>
+										<option @if($bulan=='03') selected @endif value="03">Maret</option>
+										<option @if($bulan=='04') selected @endif value="04">April</option>
+										<option @if($bulan=='05') selected @endif value="05">Mei</option>
+										<option @if($bulan=='06') selected @endif value="06">Juni</option>
+										<option @if($bulan=='07') selected @endif value="07">Juli</option>
+										<option @if($bulan=='08') selected @endif value="08">Agustus</option>
+										<option @if($bulan=='09') selected @endif value="09">September</option>
+										<option @if($bulan=='10') selected @endif value="10">Oktober</option>
+										<option @if($bulan=='11') selected @endif value="11">November</option>
+										<option @if($bulan=='12') selected @endif value="12">Desember</option>
+									</select>
+								</div>
+								<div class="col-sm-4">
+									<select name="tahun" size="1" class="form-control">
+										<option value="">--Pilih Tahun--</option>
+										<?php
+										$tgl_akhir= date('Y')+3;
+										for($i=$tgl_akhir; $i>=date('Y'); $i-=1){
+											echo "<option ".($tahun==$i?"selected":"")." value='$i'>$i</option>";
+										}
+										?>
+									</select>
+								</div>
+								<div class="col-sm-4 float-right">
+									<button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
+								</div>
+							</div>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -36,7 +89,7 @@
 						<tr>
 							<th class="text-center">No</th>
 							<th class="text-center">Nama</th>
-							<th class="text-center">Tanggal</th>
+							<th class="text-center">Tanggal Mulai</th>
 							<th class="text-center">Lapang</th>
 							<th class="text-center">Paket</th>
 							<th class="text-center">Waktu</th>
@@ -63,27 +116,43 @@
 							</td>
 							<td class="text-center">
 								@if($row->bukti_pembayaran)
-									<a href="{{ asset('storage/bukti/'.$row->bukti_pembayaran) }}" target="_blank">
-										<img src="{{ asset('storage/bukti/'.$row->bukti_pembayaran) }}" width="80px">
+									<a href="{{ asset('storage/bukti_pembayaran/'.$row->bukti_pembayaran) }}" target="_blank">
+										<img src="{{ asset('storage/bukti_pembayaran/'.$row->bukti_pembayaran) }}" width="80px">
 									</a>
 								@else
 								@endif
 							</td>
 							<td class="text-center" width="100px">
 								@if($row->deleted_at == null)
-								<button type="button" title="delete" onclick="willRemove('{{ $row->hashid }}','DELETE')" class="btn btn-danger btn-sm">
-									<i class="fa fa-trash"></i>
-								</button>
-								<a href="{{ route('admin.booking.edit', $row->hashid) }}" class="btn btn-success btn-sm">
-									<i class="fas fa-pencil-alt" ></i>
-								</a>
+									@if($row->status == 0)
+									@if($row->bukti_pembayaran)
+									<a href="{{ route('admin.booking.proses', $row->hashid) }}?param=1" class="btn btn-primary btn-sm">
+										Terima
+									</a>
+									<br>
+									@endif
+									<a href="{{ route('admin.booking.proses', $row->hashid) }}?param=3" class="btn btn-danger btn-sm mt-1">
+										Cancel
+									</a>
+									@elseif($row->status == 1)
+									<a href="{{ route('admin.booking.proses', $row->hashid) }}?param=2" class="btn btn-success btn-sm">
+										Selesai
+									</a>
+									<br>
+									@elseif($row->status == 2)
+									<span class="badge badge-info">Selesai</span>
+									@elseif($row->status == 3)
+									<a href="{{ route('admin.booking.proses', $row->hashid) }}?param=1" class="btn btn-primary btn-sm">
+										Terima
+									</a>
+									<button type="button" title="delete" onclick="willRemove('{{ $row->hashid }}','DELETE')" class="btn btn-danger btn-sm">
+										<i class="fa fa-trash"></i>
+									</button>
+									@endif
 								@else
-								<button type="button" class="btn btn-success btn-sm" onclick="restore('{{ $row->hashid }}')" title="Restore">
-									<i class="fas fa-reply-all"></i>
-								</button>
-								<button type="button" title="destroy" onclick="willRemove('{{ $row->hashid }}','DESTROY')" class="btn btn-danger btn-sm">
-									<i class="far fa-trash-alt"></i>
-								</button>
+									<button type="button" class="btn btn-success btn-sm" onclick="restore('{{ $row->hashid }}')" title="Restore">
+										<i class="fas fa-reply-all"></i>
+									</button>
 								@endif
 							</td>
 						</tr>

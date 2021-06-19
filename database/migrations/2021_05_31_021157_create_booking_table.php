@@ -17,9 +17,12 @@ class CreateBookingTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id')->index();
             $table->unsignedInteger('paket_id')->index();
-            $table->unsignedInteger('lapang_id')->index();
+            $table->unsignedInteger('lapang_id')->nullable()->index();
+            $table->unsignedInteger('jadwal_id')->nullable()->index();
+            $table->string('hari', 10)->nullable();
             $table->date('tanggal_mulai')->nullable();
             $table->date('tanggal_selesai')->nullable();
+            $table->string('nama_group', 90)->nullable();
             $table->string('jam_mulai', 20)->nullable();
             $table->string('jam_selesai', 20)->nullable();
             $table->string('jumlah_hari', 50)->nullable();
@@ -28,6 +31,7 @@ class CreateBookingTable extends Migration
             $table->string('status', 2)->nullable();
             $table->string('diskon', 70)->nullable();
             $table->string('bukti_pembayaran')->nullable();
+            $table->boolean('status_pembayaran')->default(0)->nullable();
             $table->boolean('is_member')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -45,6 +49,11 @@ class CreateBookingTable extends Migration
             $table->foreign('lapang_id')
                     ->references('id')
                     ->on('lapang')
+                    ->onDelete('cascade');
+
+            $table->foreign('jadwal_id')
+                    ->references('id')
+                    ->on('Jadwal')
                     ->onDelete('cascade');
         });
     }

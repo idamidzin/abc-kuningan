@@ -4,6 +4,7 @@
 <head>
     <!-- Mobile Specific Meta -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <!-- Favicon-->
     <link rel="shortcut icon" href="{{ asset('customer/img/fav.png') }}">
     <!-- Author Meta -->
@@ -59,6 +60,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
     <script src="{{ asset('customer/js/gmaps.min.js') }}"></script>
     <script src="{{ asset('customer/js/main.js') }}"></script>
+    @yield('scripts')
 </body>
 
 </html>

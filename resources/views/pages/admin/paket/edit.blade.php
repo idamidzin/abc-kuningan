@@ -58,6 +58,7 @@
 						<div class="col-sm-7">
 							<select name="target" class="form-control" required>
 								<option @if($paket->for_use == 'member') selected @endif value="member">Member</option>
+								<option @if($paket->for_use == 'diklat') selected @endif value="diklat">Diklat</option>
 								<option @if($paket->for_use == 'non-member') selected @endif value="non-member">Non Member</option>
 							</select>
 							@if ($errors->has('target'))
@@ -68,9 +69,9 @@
 						</div>
 					</div>
 					<div class="form-group row">
-						<label class="col-sm-3 col-form-label text-right">Diskon</label>
+						<label class="col-sm-3 col-form-label text-right">Potongan Harga</label>
 						<div class="col-sm-7">
-							<input autofocus class="form-control" required type="text" name="diskon" value="{{ old('diskon') ? old('diskon') : $paket->diskon }}" placeholder="Masukan Harga Diskon" id="rupiah" onkeypress="return hanyaAngka(event)"/>
+							<input autofocus class="form-control" type="text" name="diskon" value="{{ old('diskon') ? old('diskon') : $paket->diskon }}" placeholder="Masukan Potongan Harga" id="rupiah" onkeypress="return hanyaAngka(event)"/>
 							@if ($errors->has('diskon'))
 							<span class="invalid-feedback">
 								<strong>{{ $errors->first('diskon') }}</strong>
@@ -87,6 +88,12 @@
 								<strong>{{ $errors->first('harga') }}</strong>
 							</span>
 							@endif
+						</div>
+					</div>
+					<div class="form-group row">
+						<label class="col-sm-3 col-form-label text-right">Deskripsi</label>
+						<div class="col-sm-7">
+							<textarea name="deskripsi" id="deskripsi" placeholder="Tuliskan sesuatu disini..">{!! json_decode($paket->deskripsi) !!}</textarea>
 						</div>
 					</div>
 					<div class="col-sm-12">
@@ -106,4 +113,23 @@
 
 @endsection
 @section('scripts')
+<script src="https://cdn.ckeditor.com/ckeditor5/23.0.0/classic/ckeditor.js"></script>
+<script type="text/javascript">
+
+	ClassicEditor.create(document.querySelector('textarea#deskripsi'), {
+		toolbar: {
+			items: ['bold', 'italic', 'heading', '|', 'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|', 'blockQuote', 'insertTable', 'undo', 'redo']
+		},
+		language: 'id',
+		table: {
+			contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+		}
+	})
+	.then(function(editor) {
+		window.editor = editor;
+	})
+	.catch(function(error) {
+		console.error(error);
+	});
+</script>
 @endsection

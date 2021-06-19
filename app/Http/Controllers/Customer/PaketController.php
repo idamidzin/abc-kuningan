@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Kategori;
 use App\Models\Paket;
+use Auth;
 
 class PaketController extends Controller
 {
@@ -47,4 +48,12 @@ class PaketController extends Controller
 
 		return view('pages.customer.paket', compact('title','kategori','pakets','member_count','non_member_count','diklat_count'));
 	}
+
+	public function paketDetail(Request $request, $id)
+	{
+		$title = 'Rincian Paket';
+		$paket = Paket::where('id', $id)->first();
+		return view('pages.customer.detail_paket', compact('paket', 'title'));
+	}
+
 }

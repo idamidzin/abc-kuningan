@@ -2,7 +2,7 @@
 @section('content')
 <div class="content-heading">
 	<div>
-		Data Pelatihan
+		Data Member
 	</div>
 </div>
 <div class="container-fluid">
@@ -12,26 +12,26 @@
 			<div class="card-title">
 				<div class="row">
 					<div class="col-sm-12">
-						<a href="{{ route('admin.diklat.index') }}?status=baru&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'baru' || $status == '' ? 'text-muted':'text-primary' }}"> Pelatihan Baru
-							<span class="badge badge-pill {{ $status == 'baru' || $status == '' ? 'badge-primary' : 'bg-gray' }}">{{ $diklat_count }}</span>
+						<a href="{{ route('admin.member.index') }}?status=baru&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'baru' || $status == '' ? 'text-muted':'text-primary' }}"> Member Baru
+							<span class="badge badge-pill {{ $status == 'baru' || $status == '' ? 'badge-primary' : 'bg-gray' }}">{{ $member_count }}</span>
 						</a>
 						&nbsp; | &nbsp;
-						<a href="{{ route('admin.diklat.index') }}?status=terima&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'terima' ? 'text-muted':'text-warning' }}">
-							Pelatihan Terima
+						<a href="{{ route('admin.member.index') }}?status=terima&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'terima' ? 'text-muted':'text-warning' }}">
+							Member Terima
 							<span class="badge badge-pill {{ $status == 'terima' ? 'badge-warning' : 'bg-gray' }}">{{ $terima_count }}</span>
 						</a>
 						&nbsp; | &nbsp;
-						<a href="{{ route('admin.diklat.index') }}?status=selesai&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'selesai' ? 'text-muted':'text-success' }}">
-							Pelatihan Selesai
+						<a href="{{ route('admin.member.index') }}?status=selesai&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'selesai' ? 'text-muted':'text-success' }}">
+							Member Selesai
 							<span class="badge badge-pill {{ $status == 'selesai' ? 'badge-success' : 'bg-gray' }}">{{ $selesai_count }}</span>
 						</a>
 						&nbsp; | &nbsp;
-						<a href="{{ route('admin.diklat.index') }}?status=cancel&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'cancel' ? 'text-muted':'text-purple' }}">
+						<a href="{{ route('admin.member.index') }}?status=cancel&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'cancel' ? 'text-muted':'text-purple' }}">
 							Cancel
 							<span class="badge badge-pill {{ $status == 'cancel' ? 'badge-purple' : 'bg-gray' }}">{{ $cancel_count }}</span>
 						</a>
 						&nbsp; | &nbsp;
-						<a href="{{ route('admin.diklat.index') }}?status=trash&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'trash' ? 'text-muted':'text-danger' }}">
+						<a href="{{ route('admin.member.index') }}?status=trash&bulan={{ $bulan }}&tahun={{ $tahun }}" class="{{ $status == 'trash' ? 'text-muted':'text-danger' }}">
 							Sampah
 							<span class="badge badge-pill {{ $status == 'trash' ? 'badge-danger' : 'bg-gray' }}">{{ $trash_count }}</span>
 						</a>
@@ -89,7 +89,7 @@
 						<tr>
 							<th class="text-center">No</th>
 							<th class="text-center">Nama</th>
-							<th class="text-center">Tanggal</th>
+							<th class="text-center">Tanggal Mulai</th>
 							<th class="text-center">Lapang</th>
 							<th class="text-center">Paket</th>
 							<th class="text-center">Waktu</th>
@@ -178,7 +178,7 @@
 		});
 
 		function execRemove(method, hashid) {
-			$("#action-form").attr('action', 'diklat/delete/' + hashid);
+			$("#action-form").attr('action', 'member/delete/' + hashid);
 			$("#action-form input[name=_method]").val(method);
 			$("#action-form").submit();
 		}
@@ -199,7 +199,7 @@
 		};
 
 		function restore (hashid) {
-			$("#action-form").attr('action', 'diklat/restore/' + hashid);
+			$("#action-form").attr('action', 'member/restore/' + hashid);
 			$("#action-form input[name=_method]").val("POST");
 			$("#action-form").submit();
 		};

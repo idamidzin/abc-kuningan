@@ -20,11 +20,19 @@ class VerifyUser
 
         if (!auth()->check()) 
         {
-            return redirect('/');
+            return redirect('/login');
         }
 
         if ($user != NULL) {
-            return $next($request);
+            if (auth()->user()->verifikasi == "0") {
+                return redirect()->route('home')->with('msg', [
+                    'type'=>'danger',
+                    'for'=>'verifikasi',
+                    'text'=>'Mohon Maaf, silahkan untuk melakukan verifikasi akun untuk melanjutkan aktivitas di platform ini, terimakasih. <a href="daftar-verifikasi") }}">Verifikasi Sekarang</a>'
+                ]);
+            }else{
+                return $next($request);
+            }
         }else{
             return redirect()->route('dashboard.index')->with('msg', ['type'=>'danger','text'=>'Access Denied']);
         }

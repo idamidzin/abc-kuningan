@@ -37,7 +37,8 @@ class PaketController extends Controller
 			'jumlah_hari' => $request->jumlah_hari,
 			'harga' => $harga,
 			'for_use' => $request->target,
-			'diskon' => $request->diskon
+			'diskon' => $request->diskon,
+			'deskripsi' => json_encode($request->deskripsi)
 		]);
 
 		return redirect()->route('admin.paket.index')->with('msg',['type'=>'success','text'=>'Paket berhasil ditambahkan!']);
@@ -66,6 +67,7 @@ class PaketController extends Controller
 		$paket->harga = $harga;
 		$paket->diskon = $request->diskon;
 		$paket->for_use = $request->target;
+		$paket->deskripsi = json_encode($request->deskripsi);
 		$paket->update();
 
 		return redirect()->route('admin.paket.index')->with('msg',['type'=>'success','text'=>'Paket berhasil diperbaharui!']);

@@ -20,7 +20,8 @@ class PaketTableSeeder extends Seeder
     			'harga' => '35000',
                 'harga_perbulan' => NULL,
                 'gambar' => 'paket1.jpg',
-    			'for_use' => 'non-member'
+    			'for_use' => 'non-member',
+                'deskripsi' => ''
     		],
     		[
     			'nama' => 'Paket 2 (Booking)',
@@ -30,7 +31,8 @@ class PaketTableSeeder extends Seeder
     			'harga' => '70000',
                 'harga_perbulan' => NULL,
                 'gambar' => 'paket2.jpg',
-    			'for_use' => 'non-member'
+    			'for_use' => 'non-member',
+                'deskripsi' => ''
     		],
     		[
     			'nama' => 'Paket 3 (Booking)',
@@ -40,7 +42,8 @@ class PaketTableSeeder extends Seeder
     			'harga' => '105000',
                 'harga_perbulan' => NULL,
                 'gambar' => 'paket3.jpg',
-    			'for_use' => 'non-member'
+    			'for_use' => 'non-member',
+                'deskripsi' => ''
     		],
             [
                 'nama' => 'Paket Member',
@@ -50,7 +53,8 @@ class PaketTableSeeder extends Seeder
                 'harga' => '370000',
                 'harga_perbulan' => NULL,
                 'gambar' => 'paket-member.jpg',
-                'for_use' => 'member'
+                'for_use' => 'member',
+                'deskripsi' => ''
             ],
             [
                 'nama' => 'Pelatihan',
@@ -60,7 +64,8 @@ class PaketTableSeeder extends Seeder
                 'harga' => '900000',
                 'harga_perbulan' => '600000',
                 'gambar' => 'paket-diklat.jpg',
-                'for_use' => 'diklat'
+                'for_use' => 'diklat',
+                'deskripsi' => ''
             ]
     	]);
     }

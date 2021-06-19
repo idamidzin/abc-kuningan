@@ -16,6 +16,7 @@ class Jadwal extends Model
 		'jam_mulai',
 		'jam_selesai',
 		'hari',
+		'lapang_id',
 	];
 
 	protected $appends = ['hashid'];
@@ -28,5 +29,10 @@ class Jadwal extends Model
 	public function Kategori()
 	{
 		return $this->belongsTo( Kategori::class, 'kategori_id' );
+	}
+
+	public function Lapang()
+	{
+		return $this->belongsTo( Lapang::class, 'lapang_id' );
 	}
 }

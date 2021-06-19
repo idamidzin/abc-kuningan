@@ -22,6 +22,7 @@ class CreatePaketTable extends Migration
             $table->string('harga')->nullable();
             $table->string('harga_perbulan')->nullable();
             $table->string('gambar')->nullable();
+            $table->string('deskripsi')->nullable();
             $table->string('for_use', 50)->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -74,7 +74,7 @@ return [
     [
         'role' => '1',
         'text' => 'Pelatihan',
-        'route' => 'admin/latihan',
+        'route' => 'admin/diklat',
         'icon' => 'fas fa-walking',
         'alert' => '30'
     ],

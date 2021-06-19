@@ -95,20 +95,48 @@ Route::group(['middleware' => ['auth.admin'], 'prefix' => 'admin', 'as' => 'admi
 	|
 	*/
 	Route::get('booking', 'BookingController@index')->name('booking.index');
-	Route::get('booking/create', 'BookingController@create')->name('booking.create');
-	Route::post('booking/store', 'BookingController@store')->name('booking.store');
-	Route::get('booking/{id}/edit', 'BookingController@edit')->name('booking.edit');
-	Route::put('booking/{id}/edit', 'BookingController@update')->name('booking.update');
+	Route::get('booking/{id}/proses', 'BookingController@proses')->name('booking.proses');
 	Route::patch('booking/delete/{id}', 'BookingController@delete')->name('booking.delete');
 	Route::delete('booking/delete/{id}', 'BookingController@destroy')->name('booking.destroy');
 	Route::post('booking/restore/{id}', 'BookingController@restore')->name('booking.restore');
 
+	/*
+	|--------------------------------------------------------------------------
+	| Member Routes
+	|--------------------------------------------------------------------------
+	|
+	*/
+	Route::get('member', 'MemberController@index')->name('member.index');
+	Route::get('member/{id}/proses', 'MemberController@proses')->name('member.proses');
+	Route::patch('member/delete/{id}', 'MemberController@delete')->name('member.delete');
+	Route::delete('member/delete/{id}', 'MemberController@destroy')->name('member.destroy');
+	Route::post('member/restore/{id}', 'MemberController@restore')->name('member.restore');
+
+	/*
+	|--------------------------------------------------------------------------
+	| Diklat Routes
+	|--------------------------------------------------------------------------
+	|
+	*/
+	Route::get('diklat', 'DiklatController@index')->name('diklat.index');
+	Route::get('diklat/{id}/proses', 'DiklatController@proses')->name('diklat.proses');
+	Route::patch('diklat/delete/{id}', 'DiklatController@delete')->name('diklat.delete');
+	Route::delete('diklat/delete/{id}', 'DiklatController@destroy')->name('diklat.destroy');
+	Route::post('diklat/restore/{id}', 'DiklatController@restore')->name('diklat.restore');
+
+	/*
+	Route::get('booking/create', 'BookingController@create')->name('booking.create');
+	Route::post('booking/store', 'BookingController@store')->name('booking.store');
+	Route::get('booking/{id}/edit', 'BookingController@edit')->name('booking.edit');
+	Route::put('booking/{id}/edit', 'BookingController@update')->name('booking.update');
+	*/
 
 });
 
 
 Route::get('/', 'Customer\HomeController@index')->name('home');
 Route::get('/paket', 'Customer\PaketController@index')->name('paket');
+Route::get('/paket-detail/{id}', 'Customer\PaketController@paketDetail')->name('paket.detail');
 Route::get('/pelatihan', 'Customer\PelatihanController@index')->name('pelatihan');
 /*
 |--------------------------------------------------------------------------
@@ -119,6 +147,7 @@ Route::get('/pelatihan', 'Customer\PelatihanController@index')->name('pelatihan'
 Route::get('login', 'Customer\LoginController@showLoginForm')->name('login.customer');
 Route::get('logout-proses', 'Customer\LoginController@logout')->name('logout.customer');
 Route::post('login-proses', 'Customer\LoginController@login')->name('login.customer.proses');
+Route::get('verifikasi', 'Customer\LoginController@verifikasi')->name('verifikasi.akun');
 
 /*
 |--------------------------------------------------------------------------
@@ -129,7 +158,25 @@ Route::post('login-proses', 'Customer\LoginController@login')->name('login.custo
 Route::get('daftar', 'Customer\DaftarController@index')->name('daftar.customer');
 Route::post('daftar-proses', 'Customer\DaftarController@daftar')->name('daftar.customer.proses');
 Route::get('daftar-verifikasi', 'Customer\DaftarController@kirimEmail')->name('daftar.customer.verifikasi');
+Route::get('daftar/kirimulang', 'Customer\DaftarController@kirimUlang')->name('kirimulang.verifikasi');
 Route::get('verifikasi-proses/{id}', 'Customer\DaftarController@verifikasi')->name('customer.verifikasi.proses');
+
+Route::group(['middleware' => ['auth.user']], function () {
+
+	Route::get('/transaksi', 'Customer\TransaksiController@index')->name('transaksi');
+	Route::delete('/transaksi/delete/{id}', 'Customer\TransaksiController@delete')->name('transaksi.delete');
+	Route::post('/upload-bukti', 'Customer\TransaksiController@upload')->name('upload.bukti');
+
+	Route::get('/paket-beli/{id}', 'Customer\TransaksiController@beliPaket')->name('paket.beli');
+	Route::get('/ketersediaan-booking', 'Customer\TransaksiController@getKetersediaanBooking')->name('ketersediaan-booking');
+	Route::get('/end-time', 'Customer\TransaksiController@getEndTime')->name('get-end-time');
+	Route::get('/end-date', 'Customer\TransaksiController@getEndDate')->name('get-end-date');
+	Route::get('/get-jadwal', 'Customer\TransaksiController@getJadwal')->name('get-jadwal');
+	Route::get('/cek-tanggal-berakhir-diklat', 'Customer\TransaksiController@cekTanggalBerakhirDiklat')->name('cek-tanggal-berakhir-diklat');
+	Route::post('/booking', 'Customer\TransaksiController@booking')->name('booking');
+
+	Route::get('/jadwal', 'Customer\JadwalController@index')->name('jadwal');
+});
 
 
 

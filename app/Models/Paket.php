@@ -18,6 +18,7 @@ class Paket extends Model
 		'diskon',
 		'harga',
 		'for_use',
+		'deskripsi'
 	];
 
 	protected $appends = ['hashid'];

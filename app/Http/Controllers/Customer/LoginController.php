@@ -44,4 +44,10 @@ class LoginController extends Controller
 			return back()->with('msg',['type'=>'danger','text'=>'Username dan Password Tidak Cocok!'])->withInput();
 		}
 	}
+
+	public function verifikasi(Request $request)
+	{
+		$title = 'Verifikasi Akun';
+		return view('pages.customer.verifikasi', compact('title'));
+	}
 }

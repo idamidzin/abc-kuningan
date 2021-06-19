@@ -16,6 +16,7 @@ class CreateJadwalTable extends Migration
         Schema::create('jadwal', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('kategori_id')->index();
+            $table->unsignedInteger('lapang_id')->index();
             $table->string('jam_mulai', 30)->nullable();
             $table->string('jam_selesai', 30)->nullable();
             $table->string('hari', 40)->nullable();
@@ -25,6 +26,11 @@ class CreateJadwalTable extends Migration
             $table->foreign('kategori_id')
                     ->references('id')
                     ->on('kategori')
+                    ->onDelete('cascade');
+
+            $table->foreign('lapang_id')
+                    ->references('id')
+                    ->on('lapang')
                     ->onDelete('cascade');
         });
     }

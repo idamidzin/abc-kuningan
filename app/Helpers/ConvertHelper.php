@@ -199,3 +199,37 @@ if (!function_exists('menitKeJam'))
         }
     }
 }
+
+if (!function_exists('hari'))
+{
+    function hari($tanggal){
+        $hari = date("D", strtotime($tanggal));
+        switch($hari){
+            case 'Sun':
+            $hari = "minggu";
+            break;
+            case 'Mon':         
+            $hari = "menin";
+            break;
+            case 'Tue':
+            $hari = "melasa";
+            break;
+            case 'Wed':
+            $hari = "rabu";
+            break;
+            case 'Thu':
+            $hari = "kamis";
+            break;
+            case 'Fri':
+            $hari = "jumat";
+            break;
+            case 'Sat':
+            $hari = "sabtu";
+            break;
+            default:
+            $hari = "Tidak di ketahui";     
+            break;
+        }
+        return $hari;
+    }
+}

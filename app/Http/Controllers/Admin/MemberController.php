@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 
-class BookingController extends Controller
+class MemberController extends Controller
 {
     public function index(Request $request)
     {
@@ -15,28 +15,28 @@ class BookingController extends Controller
         $bulan = !empty($request->get('bulan')) ? $request->get('bulan') : date('m');
 
 		$trash = Booking::join('paket', 'paket.id','=','booking.paket_id')
-								->where('paket.for_use', 'non-member')
+								->where('paket.for_use', 'member')
 								->onlyTrashed()
 								->orderBy('booking.deleted_at', 'DESC')
 								->whereRaw('MONTH(booking.created_at) = ? and YEAR(booking.created_at) = ?',[$bulan,$tahun]);
 
 		$cancel = Booking::join('paket', 'paket.id','=','booking.paket_id')
-								->where('paket.for_use', 'non-member')
+								->where('paket.for_use', 'member')
 								->where('booking.status', 3)
 								->whereRaw('MONTH(booking.created_at) = ? and YEAR(booking.created_at) = ?',[$bulan,$tahun]);
 
 		$done = Booking::join('paket', 'paket.id','=','booking.paket_id')
-								->where('paket.for_use', 'non-member')
+								->where('paket.for_use', 'member')
 								->where('booking.status', 2)
 								->whereRaw('MONTH(booking.created_at) = ? and YEAR(booking.created_at) = ?',[$bulan,$tahun]);
 
 		$terima = Booking::join('paket', 'paket.id','=','booking.paket_id')
-								->where('paket.for_use', 'non-member')
+								->where('paket.for_use', 'member')
 								->where('booking.status', 1)
 								->whereRaw('MONTH(booking.created_at) = ? and YEAR(booking.created_at) = ?',[$bulan,$tahun]);
 
 		$baru = Booking::join('paket', 'paket.id','=','booking.paket_id')
-								->where('paket.for_use', 'non-member')
+								->where('paket.for_use', 'member')
 								->where('booking.status', 0)
 								->where('booking.status_pembayaran', 0)->whereRaw('MONTH(booking.created_at) = ? and YEAR(booking.created_at) = ?',[$bulan,$tahun]);
 
@@ -44,7 +44,7 @@ class BookingController extends Controller
 		$cancel_count = $cancel->count();
 		$terima_count = $terima->count();
 		$selesai_count = $done->count();
-		$booking_count = $baru->count();
+		$member_count = $baru->count();
 
 		if($status == 'trash'){
 			// Status Sampah
@@ -65,7 +65,7 @@ class BookingController extends Controller
 			$records = $baru->orderBy('booking.id', 'DESC')->select('booking.*')->get();
 		}
 
-		return view('pages.admin.booking.index',compact('records','status','booking_count','selesai_count','trash_count','terima_count','cancel_count','tahun', 'bulan'));
+		return view('pages.admin.member.index',compact('records','status','member_count','selesai_count','trash_count','terima_count','cancel_count','tahun', 'bulan'));
     }
 
     public function proses(Request $request, $id)
@@ -77,24 +77,24 @@ class BookingController extends Controller
 			$booking->update();
 		}
 
-		return back()->with('msg',['type'=>'success','text'=>'Booking berhasil diterima!'])->withInput();
+		return back()->with('msg',['type'=>'success','text'=>'Member berhasil diterima!'])->withInput();
 	}
 
 	public function delete($id)
 	{
 		Booking::where('id',$id)->delete();
-		return redirect()->route('admin.booking.index')->with('msg',['type'=>'success','text'=>'Booking berhasil dihapus!']);
+		return redirect()->route('admin.member.index')->with('msg',['type'=>'success','text'=>'Member berhasil dihapus!']);
 	}
 
 	public function destroy($id)
 	{
 		Booking::where('id',$id)->forceDelete();
-		return redirect()->route('admin.booking.index')->with('msg',['type'=>'success','text'=>'Booking berhasil dihapus!']);
+		return redirect()->route('admin.member.index')->with('msg',['type'=>'success','text'=>'Member berhasil dihapus!']);
 	}
 
 	public function restore($id)
 	{
 		Booking::where('id',$id)->restore();
-		return redirect()->route('admin.booking.index')->with('msg',['type'=>'success','text'=>'Booking berhasil direstore!']);
+		return redirect()->route('admin.member.index')->with('msg',['type'=>'success','text'=>'Member berhasil direstore!']);
 	}
 }
