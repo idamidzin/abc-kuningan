@@ -69,7 +69,7 @@
                                                 <td width="30%">Bukti Pembayaran</td>
                                                 <td>
                                                     @if($row->bukti_pembayaran)
-                                                       : <a target="_blank" href="{{ asset('storage/bukti_pembayaran/'.$row->bukti_pembayaran) }}">Lihat bukti</a>
+                                                       : <a target="_blank" href="{{ asset('storage/bukti_pembayaran/'.$row->bukti_pembayaran) }}" class="img-pop-up">Lihat bukti</a>
                                                     @else
                                                     <form action="{{ route('upload.bukti') }}" method="POST" enctype="multipart/form-data">
                                                         @csrf

@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Models\Lapang;
 use App\Models\Jadwal;
 use App\Models\Diklat;
+use App\Models\Pembayaran;
 
 class TransaksiController extends Controller
 {
@@ -32,72 +33,58 @@ class TransaksiController extends Controller
 	{
 		$paket = Paket::where('id', $request->paket_id)->first();
 
-		if ($paket->for_use == 'member') {
-			$end_time = date('H:i:s', strtotime('+'.$paket->jumlah_jam.' minutes', strtotime($request->start_time)));
+		$tanggal_mulai = $request->tanggal_mulai ? $request->tanggal_mulai : date('Y-m-d');
+		$jumlahHariNew = $request->jumlah_bulan*30;
 
-			$cek_booking = Booking::where('paket_id', $paket->id)
-									->whereRaw('? between tanggal_mulai and tanggal_selesai',[$request->tanggal_mulai])
-									->where('lapang_id', $request->lapang_id)
-									->where('hari', numberToDay($request->hari))
-									->whereRaw('? between jam_mulai and jam_selesai',[date('H:i:s', strtotime($request->start_time))])
-									->orWhereRaw('? between jam_mulai and jam_selesai',[$end_time])
-									->get();
+		$start_time = date('H:i:s', strtotime($request->start_time));
+		$end_time = date('H:i:s', strtotime('+'.$paket->jumlah_jam.' minutes', strtotime($request->start_time)));
+		$end_date = date('Y-m-d', strtotime('+'.$jumlahHariNew.' days', strtotime($tanggal_mulai)));
+		$lapang_id = $request->lapang_id;
+		$hari = numberToDay($request->hari);
 
-			$cek_jadwal = Jadwal::where('lapang_id', $request->lapang_id)
-									->where('hari', numberToDay($request->hari))
-									->whereRaw('? between jam_mulai and jam_selesai',[date('H:i:s', strtotime($request->start_time))])
-									->orWhereRaw('? between jam_mulai and jam_selesai',[$end_time])
-									->get();
+		$cek_booking = Booking::where('lapang_id', $request->lapang_id)
+								->where('hari', numberToDay($request->hari))
+								->whereIn('status', [0,1])
+								->where(function($query) use ($tanggal_mulai, $end_date){
+									$query->whereRaw('? between tanggal_mulai and tanggal_selesai',[$tanggal_mulai]);
+									$query->orWhereRaw('? between tanggal_mulai and tanggal_selesai',[$end_date]);
+								})
+								->where(function($query) use ($start_time, $end_time){
+									$query->whereRaw('? between jam_mulai and jam_selesai',[$start_time]);
+									$query->orWhereRaw('? between jam_mulai and jam_selesai',[$end_time]);
+								})
+								->get();
 
-			if (count($cek_booking) > 0 || count($cek_jadwal)) {
+		$cek_jadwal = Jadwal::where('lapang_id', $request->lapang_id)
+								->where('hari', numberToDay($request->hari))
+								->whereRaw('? between jam_mulai and jam_selesai',[date('H:i:s', strtotime($request->start_time))])
+								->orWhereRaw('? between jam_mulai and jam_selesai',[$end_time])
+								->get();
+
+		if (strtotime($tanggal_mulai) < strtotime(date('Y-m-d'))) {
+			$status = true;
+		}else if (strtotime($tanggal_mulai) == strtotime(date('Y-m-d'))) {
+			if (count($cek_booking) > 0 || count($cek_jadwal) > 0) {
 				$status = true;
 			}else{
 				$status = false;
 			}
-
-			$records = [
-				'end_time' => $end_time,
-				'status' => $status
-			];
 		}
-
-		echo json_encode($records);
-	}
-
-    public function getEndDate(Request $request)
-	{
-		$paket = Paket::where('id', $request->paket_id)->first();
-
-		if ($paket->for_use == 'member') {
-			$end_time = date('H:i:s', strtotime('+'.$paket->jumlah_jam.' minutes', strtotime($request->start_time)));
-			$end_date = date('Y-m-d', strtotime('+'.$paket->jumlah_hari.' days', strtotime($request->tanggal_mulai)));
-
-			$cek_booking = Booking::where('paket_id', $paket->id)
-									->whereRaw('? between tanggal_mulai and tanggal_selesai',[$request->tanggal_mulai])
-									->where('lapang_id', $request->lapang_id)
-									->where('hari', numberToDay($request->hari))
-									->whereRaw('? between jam_mulai and jam_selesai',[date('H:i:s', strtotime($request->start_time))])
-									->orWhereRaw('? between jam_mulai and jam_selesai',[$end_time])
-									->get();
-
-			$cek_jadwal = Jadwal::where('lapang_id', $request->lapang_id)
-									->where('hari', numberToDay($request->hari))
-									->whereRaw('? between jam_mulai and jam_selesai',[date('H:i:s', strtotime($request->start_time))])
-									->orWhereRaw('? between jam_mulai and jam_selesai',[$end_time])
-									->get();
-
-			if (count($cek_booking) > 0 || count($cek_jadwal)) {
+		else
+		{
+			if (count($cek_booking) > 0 || count($cek_jadwal) > 0) {
 				$status = true;
 			}else{
 				$status = false;
 			}
-
-			$records = [
-				'end_time' => $end_time,
-				'end_date' => $end_date,
-				'status' => $status
-			];
 		}
+
+		$records = [
+			'end_time' => $end_time,
+			'end_date' => $end_date,
+			'total_bayar' => 'Rp.'.number_format($paket->harga * ($jumlahHariNew/30),0,',','.'),
+			'status' => $status
+		];
 
 		echo json_encode($records);
 	}
@@ -107,22 +94,34 @@ class TransaksiController extends Controller
 		$paket = Paket::where('id', $request->paket_id)->first();
 
 		$end_time = date('H:i:s', strtotime('+'.$paket->jumlah_jam.' minutes', strtotime($request->start_time)));
+		$end_date = date('Y-m-d', strtotime('+'.$paket->jumlah_hari.' days', strtotime($request->tanggal_mulai)));
+		$hari = numberToDay(date('N', strtotime($request->tanggal_mulai)));
 
-		$cek_booking = Booking::where('paket_id', $paket->id)
-								->whereRaw('? between tanggal_mulai and tanggal_selesai',[$request->tanggal_mulai])
+		$cek_booking = Booking::whereRaw('? between tanggal_mulai and tanggal_selesai',[$request->tanggal_mulai])
 								->where('lapang_id', $request->lapang_id)
-								->where('hari', numberToDay($request->hari))
 								->whereRaw('? between jam_mulai and jam_selesai',[date('H:i:s', strtotime($request->start_time))])
 								->orWhereRaw('? between jam_mulai and jam_selesai',[$end_time])
 								->get();
 
 		$cek_jadwal = Jadwal::where('lapang_id', $request->lapang_id)
-								->where('hari', numberToDay($request->hari))
-								->whereRaw('? between jam_mulai and jam_selesai',[date('H:i:s', strtotime($request->start_time))])
-								->orWhereRaw('? between jam_mulai and jam_selesai',[$end_time])
+								->where('hari', $hari)
+								->whereRaw('? between jam_mulai and jam_selesai',[date('H:i:s', strtotime($request->start_time)), $end_time])
 								->get();
 
-		if (count($cek_booking) > 0 || count($cek_jadwal)) {
+		// $data = [];
+		// foreach ($cek_booking as $row) {
+		// 	$data[] = [
+		// 		'hari' => $row->hari,
+		// 		'tanggal_mulai' => $row->tanggal_mulai,
+		// 		'tanggal_selesai' => $row->tanggal_selesai,
+		// 		'jam_mulai' => $row->jam_mulai,
+		// 		'jam_selesai' => $row->jam_selesai
+		// 	];
+		// }
+
+		// dd($cek_jadwal);
+
+		if (count($cek_booking) > 0 || count($cek_jadwal) > 0) {
 			$status = true;
 		}else{
 			$status = false;
@@ -187,29 +186,47 @@ class TransaksiController extends Controller
 		
 		if ($paket->for_use == 'member')
 		{
+			$harga = preg_replace('/[Rp.]/', '', $request->total_bayar);
 			$jam_mulai = date('H:i:s', strtotime($request->start_time));
 			$jam_selesai = date('H:i:s', strtotime($request->end_time));
 			$hari = numberToDay($request->hari);
+			$jumlah_bulan = $request->jumlah_bulan;
 
-			$booking = Booking::create([
-				'user_id' => auth()->user()->id,
-				'paket_id' => $paket->id,
-				'lapang_id' => $request->lapang_id,
-				'hari' => $hari,
-				'tanggal_mulai' => $request->tanggal_mulai,
-				'tanggal_selesai' => $request->tanggal_selesai,
-				'jam_mulai' => $jam_mulai,
-				'jam_selesai' => $jam_selesai,
-				'jumlah_hari' => $paket->jumlah_hari,
-				'keterangan' => NULL,
-				'harga' => $paket->harga,
-				'status' => 0,
-				'diskon' => $paket->diskon ? $paket->diskon : NULL,
-				'bukti_pembayaran' => NULL,
-				'is_member' => true,
-			]);
+			$booking = Booking::where('user_id', auth()->user()->id)
+									->where('paket_id', $paket->id)
+									->where('lapang_id', $request->lapang_id)
+									->where('tanggal_mulai', $request->tanggal_mulai)
+									->where('jam_mulai', $jam_mulai)
+									->where('jam_selesai', $jam_selesai)
+									->first();
 
-			return redirect()->route('home')->with('msg',['type'=>'success','text'=>'Member berhasil diajukan!']);
+			if (!$booking) {
+				$booking = Booking::create([
+					'user_id' => auth()->user()->id,
+					'paket_id' => $paket->id,
+					'lapang_id' => $request->lapang_id,
+					'hari' => $hari,
+					'tanggal_mulai' => $request->tanggal_mulai,
+					'tanggal_selesai' => $request->tanggal_selesai,
+					'jam_mulai' => $jam_mulai,
+					'jam_selesai' => $jam_selesai,
+					'jumlah_hari' => $paket->jumlah_hari,
+					'keterangan' => NULL,
+					'harga' => $harga,
+					'status' => 0,
+					'diskon' => $paket->diskon ? $paket->diskon : NULL,
+					'bukti_pembayaran' => NULL,
+					'is_member' => true,
+				]);
+
+				for ($i=1; $i <= $jumlah_bulan; $i++) { 
+					$pembayaran = Pembayaran::create([
+						'booking_id' => $booking->id
+					]);
+				}
+			}
+
+			// return redirect()->route('transaksi')->with('msg',['type'=>'success','text'=>'Member berhasil diajukan!']);
 		}
 		else if($paket->for_use == 'diklat')
 		{
@@ -217,56 +234,85 @@ class TransaksiController extends Controller
 			$hari = strtolower($request->hari);
 			$jam_mulai = date('H:i:s', strtotime($request->start_time));
 			$jam_selesai = date('H:i:s', strtotime($request->end_time));
+			$jumlah_bulan = $request->jumlah_bulan;
 
 			$jadwal = Jadwal::where('id', $request->jadwal_id)->first();
 
-			$booking = Booking::create([
-				'user_id' => auth()->user()->id,
-				'paket_id' => $paket->id,
-				'lapang_id' => $jadwal->lapang_id,
-				'jadwal_id' => $jadwal->id,
-				'hari' => $hari,
-				'tanggal_mulai' => $request->tanggal_mulai,
-				'tanggal_selesai' => $request->tanggal_selesai,
-				'jam_mulai' => $jam_mulai,
-				'jam_selesai' => $jam_selesai,
-				'jumlah_hari' => $paket->jumlah_hari,
-				'keterangan' => NULL,
-				'harga' => $harga,
-				'status' => 0,
-				'diskon' => $paket->diskon ? $paket->diskon : NULL,
-				'bukti_pembayaran' => NULL,
-				'is_member' => false,
-			]);
+			$booking = Booking::where('user_id', auth()->user()->id)
+									->where('paket_id', $paket->id)
+									->where('lapang_id', $jadwal->lapang_id)
+									->where('tanggal_mulai', $request->tanggal_mulai)
+									->where('jam_mulai', $jam_mulai)
+									->where('jam_selesai', $jam_selesai)
+									->first();
+			if (!$booking) {
+				$booking = Booking::create([
+					'user_id' => auth()->user()->id,
+					'paket_id' => $paket->id,
+					'lapang_id' => $jadwal->lapang_id,
+					'jadwal_id' => $jadwal->id,
+					'hari' => $hari,
+					'tanggal_mulai' => $request->tanggal_mulai,
+					'tanggal_selesai' => $request->tanggal_selesai,
+					'jam_mulai' => $jam_mulai,
+					'jam_selesai' => $jam_selesai,
+					'jumlah_hari' => $paket->jumlah_hari,
+					'keterangan' => NULL,
+					'harga' => $harga,
+					'status' => 0,
+					'diskon' => $paket->diskon ? $paket->diskon : NULL,
+					'bukti_pembayaran' => NULL,
+					'is_member' => false,
+				]);
+				
+				for ($i=1; $i <= $jumlah_bulan; $i++) { 
+					$pembayaran = Pembayaran::create([
+						'booking_id' => $booking->id
+					]);
+				}
+			}
 
-			return redirect()->route('home')->with('msg',['type'=>'success','text'=>'Pelatihan berhasil diajukan!']);
+
+			// return redirect()->route('transaksi')->with('msg',['type'=>'success','text'=>'Pelatihan berhasil diajukan!']);
 		}
 		else
 		{
 			$jam_mulai = date('H:i:s', strtotime($request->start_time));
 			$jam_selesai = date('H:i:s', strtotime($request->end_time));
-			$hari = numberToDay($request->hari);
+			$hari = numberToDay(date('N', strtotime($request->tanggal_mulai)));
 
-			$booking = Booking::create([
-				'user_id' => auth()->user()->id,
-				'paket_id' => $paket->id,
-				'lapang_id' => $request->lapang_id,
-				'hari' => $hari,
-				'tanggal_mulai' => $request->tanggal_mulai,
-				'tanggal_selesai' => $request->tanggal_mulai, // Tanggal selesai sama dengan tanggal mulai
-				'jam_mulai' => $jam_mulai,
-				'jam_selesai' => $jam_selesai,
-				'jumlah_hari' => $paket->jumlah_hari,
-				'keterangan' => NULL,
-				'harga' => $paket->harga,
-				'status' => 0,
-				'diskon' => $paket->diskon ? $paket->diskon : NULL,
-				'bukti_pembayaran' => NULL,
-				'is_member' => false,
-			]);
+			$booking = Booking::where('user_id', auth()->user()->id)
+									->where('paket_id', $paket->id)
+									->where('lapang_id', $request->lapang_id)
+									->where('tanggal_mulai', $request->tanggal_mulai)
+									->where('jam_mulai', $jam_mulai)
+									->where('jam_selesai', $jam_selesai)
+									->first();
 
-			return redirect()->route('home')->with('msg',['type'=>'success','text'=>'Booking berhasil diajukan!']);
+			if (!$booking) {
+				$booking = Booking::create([
+					'user_id' => auth()->user()->id,
+					'paket_id' => $paket->id,
+					'lapang_id' => $request->lapang_id,
+					'hari' => $hari,
+					'tanggal_mulai' => $request->tanggal_mulai,
+					'tanggal_selesai' => $request->tanggal_mulai, // Tanggal selesai sama dengan tanggal mulai
+					'jam_mulai' => $jam_mulai,
+					'jam_selesai' => $jam_selesai,
+					'jumlah_hari' => $paket->jumlah_hari,
+					'keterangan' => NULL,
+					'harga' => $paket->harga,
+					'status' => 0,
+					'diskon' => $paket->diskon ? $paket->diskon : NULL,
+					'bukti_pembayaran' => NULL,
+					'is_member' => false,
+				]);
+			}
+
+			// return redirect()->route('transaksi')->with('msg',['type'=>'success','text'=>'Booking berhasil diajukan!']);
 		}
+		$title = 'Info Pembayaran';
+		return view('pages.customer.info_pembayaran', compact('booking','title'));
 	}
 
 	public function upload(Request $request)
@@ -286,7 +332,7 @@ class TransaksiController extends Controller
 		$transaksi->bukti_pembayaran = $path_bukti;
 		$transaksi->update();
 
-		return redirect()->back()->with('msg', ['type' => 'success', 'text' => 'Bukti Pembayaran Berhasil dikirim !']);
+		return redirect()->route('transaksi')->with('msg', ['type' => 'success', 'text' => 'Bukti Pembayaran Berhasil dikirim !']);
 	}
 
 	public function delete($id)

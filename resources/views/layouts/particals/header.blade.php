@@ -48,7 +48,7 @@
         <nav class="navbar navbar-expand-lg navbar-light main_box">
             <div class="container">
                 <!-- Brand and toggle get grouped for better mobile display -->
-                <a class="navbar-brand logo_h" href="index.html"><img src="{{ asset('customer/img/logo.png') }}" alt=""></a>
+                <a class="navbar-brand logo_h" href="{{ route('home') }}"><img src="{{ asset('customer/img/logo.png') }}" alt=""></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="icon-bar"></span>
@@ -71,8 +71,8 @@
                         @endif
                     </a>
                         <ul class="dropdown-menu">
-                            <li class="nav-item"><a class="nav-link" href="{{ '' }}">Profile</a></li>
-                            <li class="nav-item">
+                            <li class="nav-item"><a class="nav-link" href="{{ route('profile') }}">Profile</a></li>
+                            <!-- <li class="nav-item">
                                 <a class="nav-link" href="{{ '' }}">
                                     @if($paket_aktif_count > 0)
                                         Paket Aktif<span class="badge badge-danger ml-5">{{ $paket_aktif_count }}</span>
@@ -80,7 +80,7 @@
                                         Paket Aktif
                                     @endif
                                 </a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('transaksi') }}">
                                     @if($transaksi_baru_count > 0)

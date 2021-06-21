@@ -13,6 +13,7 @@ class Pembayaran extends Model
 	protected $table = 'pembayaran';
 	protected $fillable = [
 		'diklat_id',
+		'booking_id',
 		'tanggal_bayar',
 		'bukti_pembayaran',
 	];
@@ -27,6 +28,11 @@ class Pembayaran extends Model
 	public function Diklat()
 	{
 		return $this->belongsTo( Diklat::class, 'diklat_id' );
+	}
+
+	public function Booking()
+	{
+		return $this->belongsTo( Booking::class, 'booking_id' );
 	}
 }
 

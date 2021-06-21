@@ -10,7 +10,9 @@
             <div class="col-lg-4 offset-0">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{ asset('customer/img/features/f-icon1.png') }}" alt="" width="200px;">
+                        <a href="{{ route('paket') }}?for_use=member">                            
+                            <img src="{{ asset('customer/img/features/f-icon1.png') }}" alt="" width="200px;">
+                        </a>
                     </div>
                     <h6>Member</h6>
                     <p>Yuk berlangganan</p>
@@ -20,7 +22,9 @@
             <div class="col-lg-4">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{ asset('customer/img/features/f-icon2.png') }}" alt="" width="200px;">
+                        <a href="{{ route('paket') }}?for_use=non-member">                            
+                            <img src="{{ asset('customer/img/features/f-icon2.png') }}" alt="" width="200px;">
+                        </a>
                     </div>
                     <h6>Booking</h6>
                     <p>Booking lapangan</p>
@@ -30,7 +34,9 @@
             <div class="col-lg-4">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{ asset('customer/img/features/f-icon3.png') }}" alt="" width="200px;">
+                        <a href="{{ route('paket') }}?for_use=diklat">                            
+                            <img src="{{ asset('customer/img/features/f-icon3.png') }}" alt="" width="200px;">
+                        </a>
                     </div>
                     <h6>Pelatihan</h6>
                     <p>Gabung untuk menjadi atlet</p>
@@ -51,7 +57,7 @@
                         <div class="single-deal">
                             <div class="overlay"></div>
                             <img class="img-fluid w-100" src="{{ asset('storage/galeri/c1.jpg') }}" alt="">
-                            <a href="img/category/c1.jpg" class="img-pop-up" target="_blank">
+                            <a href="{{ asset('storage/galeri/c1.jpg') }}" class="img-pop-up" target="_blank">
                                 <div class="deal-details">
                                     <h6 class="deal-title">Raket for Sports</h6>
                                 </div>
@@ -62,7 +68,7 @@
                         <div class="single-deal">
                             <div class="overlay"></div>
                             <img class="img-fluid w-100" src="{{ asset('storage/galeri/a2.jpg') }}" alt="">
-                            <a href="img/category/c2.jpg" class="img-pop-up" target="_blank">
+                            <a href="{{ asset('storage/galeri/a2.jpg') }}" class="img-pop-up" target="_blank">
                                 <div class="deal-details">
                                     <h6 class="deal-title">Raket for Sports</h6>
                                 </div>
@@ -73,7 +79,7 @@
                         <div class="single-deal">
                             <div class="overlay"></div>
                             <img class="img-fluid w-100" src="{{ asset('storage/galeri/a1.jpg') }}" alt="">
-                            <a href="img/category/c3.jpg" class="img-pop-up" target="_blank">
+                            <a href="{{ asset('storage/galeri/a1.jpg') }}" class="img-pop-up" target="_blank">
                                 <div class="deal-details">
                                     <h6 class="deal-title">Product for Couple</h6>
                                 </div>
@@ -84,7 +90,7 @@
                         <div class="single-deal">
                             <div class="overlay"></div>
                             <img class="img-fluid w-100" src="{{ asset('storage/galeri/c2.jpg') }}" alt="">
-                            <a href="img/category/c4.jpg" class="img-pop-up" target="_blank">
+                            <a href="{{ asset('storage/galeri/c2.jpg') }}" class="img-pop-up" target="_blank">
                                 <div class="deal-details">
                                     <h6 class="deal-title">Raket for Sports</h6>
                                 </div>
@@ -97,7 +103,7 @@
                 <div class="single-deal">
                     <div class="overlay"></div>
                     <img class="img-fluid w-100" src="{{ asset('storage/galeri/best.jpg') }}" alt="">
-                    <a href="img/category/c5.jpg" class="img-pop-up" target="_blank">
+                    <a href="{{ asset('storage/galeri/best.jpg') }}" class="img-pop-up" target="_blank">
                         <div class="deal-details">
                             <h6 class="deal-title">Raket for Sports</h6>
                         </div>
@@ -135,23 +141,34 @@
                                 <h6 class="l-through">$210.00</h6>
                             </div>
                             <div class="prd-bottom">
-
-                                <a href="" class="social-info">
+                                @if($paket->for_use == 'non-member')
+                                <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
                                     <span class="ti-bag"></span>
-                                    <p class="hover-text">add to bag</p>
+                                    <p class="hover-text">Booking</p>
                                 </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Wishlist</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">compare</p>
-                                </a>
-                                <a href="" class="social-info">
+                                <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
                                     <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">view more</p>
+                                    <p class="hover-text">Lihat Detail</p>
                                 </a>
+                                @elseif($paket->for_use == 'member')
+                                <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
+                                    <span class="ti-bag"></span>
+                                    <p class="hover-text">Member</p>
+                                </a>
+                                <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
+                                    <span class="lnr lnr-move"></span>
+                                    <p class="hover-text">Lihat Detail</p>
+                                </a>
+                                @else
+                                <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
+                                    <span class="ti-bag"></span>
+                                    <p class="hover-text">Pelatihan</p>
+                                </a>
+                                <a href="{{ route('paket.detail', $paket->hashid) }}" class="social-info">
+                                    <span class="lnr lnr-move"></span>
+                                    <p class="hover-text">Lihat Detail</p>
+                                </a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -200,7 +217,7 @@
                 <div class="">
                     <!-- single exclusive carousel -->
                     <?php
-                        $paket_diskon = \App\Models\Paket::limit(1)->first();
+                    $paket_diskon = \App\Models\Paket::limit(1)->first();
                     ?>
                     <div class="single-exclusive-slider">
                         <img class="img-fluid" src="{{ asset('storage/paket/'.$paket_diskon->gambar) }}" alt="" style="border-radius: 10%; width:300px;">
@@ -230,7 +247,7 @@
 <section class="brand-area section_gap">
     <div class="container">
         <div class="row">
-            <a class="col single-img" href="#">
+            <!-- <a class="col single-img" href="#">
                 <img class="img-fluid d-block mx-auto" src="{{ asset('customer/img/brand/1.png') }}" alt="">
             </a>
             <a class="col single-img" href="#">
@@ -244,7 +261,7 @@
             </a>
             <a class="col single-img" href="#">
                 <img class="img-fluid d-block mx-auto" src="{{ asset('customer/img/brand/5.png') }}" alt="">
-            </a>
+            </a> -->
         </div>
     </div>
 </section>
@@ -252,10 +269,6 @@
 
 @endsection
 @section('scripts')
-<script src="{{ mix('/js/sparkline.js') }}"></script>
-<script src="{{ mix('/js/easypiechart.js') }}"></script>
-<script src="{{ mix('/js/flot.js') }}"></script>
-<script src="{{ mix('/js/sweetalert.js') }}"></script>
 <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
 <script type="text/javascript">
 </script>

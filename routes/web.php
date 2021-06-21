@@ -163,6 +163,10 @@ Route::get('verifikasi-proses/{id}', 'Customer\DaftarController@verifikasi')->na
 
 Route::group(['middleware' => ['auth.user']], function () {
 
+	Route::get('/profile', 'Customer\HomeController@profile')->name('profile');
+	Route::get('/edit-profile', 'Customer\HomeController@editProfile')->name('profile.edit');
+	Route::put('/profile/{id}/update', 'Customer\HomeController@updateProfile')->name('profile.update');
+
 	Route::get('/transaksi', 'Customer\TransaksiController@index')->name('transaksi');
 	Route::delete('/transaksi/delete/{id}', 'Customer\TransaksiController@delete')->name('transaksi.delete');
 	Route::post('/upload-bukti', 'Customer\TransaksiController@upload')->name('upload.bukti');
@@ -170,10 +174,10 @@ Route::group(['middleware' => ['auth.user']], function () {
 	Route::get('/paket-beli/{id}', 'Customer\TransaksiController@beliPaket')->name('paket.beli');
 	Route::get('/ketersediaan-booking', 'Customer\TransaksiController@getKetersediaanBooking')->name('ketersediaan-booking');
 	Route::get('/end-time', 'Customer\TransaksiController@getEndTime')->name('get-end-time');
-	Route::get('/end-date', 'Customer\TransaksiController@getEndDate')->name('get-end-date');
 	Route::get('/get-jadwal', 'Customer\TransaksiController@getJadwal')->name('get-jadwal');
 	Route::get('/cek-tanggal-berakhir-diklat', 'Customer\TransaksiController@cekTanggalBerakhirDiklat')->name('cek-tanggal-berakhir-diklat');
 	Route::post('/booking', 'Customer\TransaksiController@booking')->name('booking');
+	Route::post('/info-pembayaran', 'Customer\TransaksiController@infoPembayaran')->name('info-pembayaran');
 
 	Route::get('/jadwal', 'Customer\JadwalController@index')->name('jadwal');
 });

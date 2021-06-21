@@ -15,7 +15,8 @@ class CreatePembayaranTable extends Migration
     {
         Schema::create('pembayaran', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('diklat_id')->index();
+            $table->unsignedInteger('diklat_id')->nullable()->index();
+            $table->unsignedInteger('booking_id')->nullable()->index();
             $table->date('tanggal_bayar')->nullable();
             $table->string('bukti_pembayaran')->nullable();
             $table->timestamps();
@@ -24,6 +25,11 @@ class CreatePembayaranTable extends Migration
             $table->foreign('diklat_id')
                     ->references('id')
                     ->on('diklat')
+                    ->onDelete('cascade');
+
+            $table->foreign('booking_id')
+                    ->references('id')
+                    ->on('booking')
                     ->onDelete('cascade');
         });
     }

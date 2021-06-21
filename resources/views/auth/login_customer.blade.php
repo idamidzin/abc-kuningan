@@ -34,7 +34,7 @@
 						</div>
 						<div class="col-md-12 form-group">
 							<button type="submit" class="primary-btn">Masuk</button>
-							<a href="#">Lupa Password ?</a>
+							<!-- <a href="#">Lupa Password ?</a> -->
 						</div>
 					</form>
 				</div>

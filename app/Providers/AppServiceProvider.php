@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Blade;
+use App\Models\Paket;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,14 +41,16 @@ class AppServiceProvider extends ServiceProvider
                 $transaksi_baru_count = 0;
                 $paket_aktif_count = 0;
             }
+            $paket_ = Paket::all();
 
             $view->with('booking_count', $booking_count);
             $view->with('transaksi_baru_count', $transaksi_baru_count);
             $view->with('paket_aktif_count', $paket_aktif_count);
+            $view->with('paket_', $paket_);
 
         });
         view()->composer('*',function($view){
-            $booking_baru_count = Booking::where('status', 1)->count();
+            $booking_baru_count = 0;
             $view->with('booking_baru_count', $booking_baru_count);
         });
     }

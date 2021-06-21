@@ -95,6 +95,10 @@
                                     <option value="7">Minggu</option>
                                 </select>
                             </div>
+                            <div class="col-md-12 form-group p_star">
+                                <label><strong>Berapa lama (bulan) ?</strong></label>
+                                <input type="number" class="form-control" id="jumlah_bulan" name="jumlah_bulan" min="1" value="{{ old('jumlah_bulan') ? old('jumlah_bulan') : '1' }}">
+                            </div>
                             <div class="col-md-6 form-group p_star">
                                 <label><strong>Setiap jam berapa ?</strong></label>
                                 <input type="time" class="form-control" id="start_time" name="start_time">
@@ -110,6 +114,10 @@
                             <div class="col-md-6 form-group p_star">
                                 <label><strong>Berakhir pada tanggal ?</strong></label>
                                 <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" readonly>
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <label><strong>Total Bayar ?</strong></label>
+                                <input type="text" class="form-control" id="total_bayar_member" name="total_bayar" readonly>
                             </div>
                             <div class="col-md-12 form-group p_star" style="display: none;" id="alert">
                                 <div class="alert alert-danger">Jadwal tersebut sudah terpakai, silahkan untuk mencari jadwal yang kosong</div>
@@ -178,7 +186,7 @@
                         <form class="row contact_form" action="{{ route('booking') }}" method="POST">
                             <input type="hidden" name="paket_id" value="{{ $paket->id }}">
                             @csrf
-                            <div class="col-md-6 form-group p_star">
+                            <div class="col-md-12 form-group p_star">
                                 <label><strong>Lapangan</strong></label>
                                 <select name="lapang_id" class="from-control country_select" id="lapang_id_booking">
                                     <option value="">Pilih Lapangan</option>
@@ -187,18 +195,9 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-6 form-group p_star">
-                                <label><strong>Mau hari apa ?</strong></label>
-                                <select name="hari" class="from-control country_select" id="hari_booking">
-                                    <option value="">Pilih Hari</option>
-                                    <option value="1">Senin</option>
-                                    <option value="2">Selasa</option>
-                                    <option value="3">Rabu</option>
-                                    <option value="4">Kamis</option>
-                                    <option value="5">Jumat</option>
-                                    <option value="6">Sabtu</option>
-                                    <option value="7">Minggu</option>
-                                </select>
+                            <div class="col-md-12 form-group p_star">
+                                <label><strong>Tanggal berapa ?</strong></label>
+                                <input type="date" class="form-control" id="tanggal_mulai_booking" name="tanggal_mulai">
                             </div>
                             <div class="col-md-6 form-group p_star">
                                 <label><strong>Mau jam berapa ?</strong></label>
@@ -207,10 +206,6 @@
                             <div class="col-md-6 form-group p_star">
                                 <label><strong>Sampai jam ?</strong></label>
                                 <input type="time" class="form-control" id="end_time_booking" name="end_time" readonly>
-                            </div>
-                            <div class="col-md-12 form-group p_star">
-                                <label><strong>Tanggal berapa ?</strong></label>
-                                <input type="date" class="form-control" id="tanggal_mulai_booking" name="tanggal_mulai">
                             </div>
                             <div class="col-md-12 form-group p_star" style="display: none;" id="alert_booking">
                                 <div class="alert alert-danger">Jadwal tersebut sudah terpakai, silahkan untuk mencari jadwal yang kosong</div>
@@ -235,9 +230,9 @@
 
     // ========================== JS Untuk Booking ======================== //
     $(document).on('change','#start_time_booking', function() {
-        if ($('#lapang_id_booking').val() && $('#hari_booking').val() && $('#start_time_booking').val()) {
+        if ($('#lapang_id_booking').val() && $('#start_time_booking').val()) {
             $.get("{{ route('ketersediaan-booking') }}",{
-                start_time:$(this).val(),
+                start_time:$('#start_time_booking').val(),
                 paket_id:'{{ $paket->id }}',
                 hari:$('#hari_booking').val(),
                 lapang_id:$('#lapang_id_booking').val(),
@@ -249,7 +244,7 @@
                     $('#alert_booking').show();
                     $('#ajukan_booking').hide();
                 }else{
-                    if ($('#start_time_booking').val() && $('#hari_booking').val() && $('#lapang_id_booking').val() && $('#tanggal_mulai_booking').val()) {
+                    if ($('#start_time_booking').val() && $('#lapang_id_booking').val() && $('#tanggal_mulai_booking').val()) {
                         $('#ajukan_booking').show();
                     }
                     $('#alert_booking').hide();
@@ -259,9 +254,9 @@
     });
 
     $(document).on('change','#lapang_id_booking', function() {
-        if ($('#lapang_id_booking').val() && $('#hari_booking').val() && $('#start_time_booking').val() && $('#tanggal_mulai_booking').val()) {
+        if ($('#lapang_id_booking').val() && $('#start_time_booking').val() && $('#tanggal_mulai_booking').val()) {
             $.get("{{ route('ketersediaan-booking') }}",{
-                start_time:$(this).val(),
+                start_time:$('#start_time_booking').val(),
                 paket_id:'{{ $paket->id }}',
                 hari:$('#hari_booking').val(),
                 lapang_id:$('#lapang_id_booking').val(),
@@ -273,31 +268,7 @@
                     $('#alert_booking').show();
                     $('#ajukan_booking').hide();
                 }else{
-                    if ($('#start_time_booking').val() && $('#hari_booking').val() && $('#lapang_id_booking').val() && $('#tanggal_mulai_booking').val()) {
-                        $('#ajukan_booking').show();
-                    }
-                    $('#alert_booking').hide();
-                }
-            },'json');
-        }
-    });
-
-    $(document).on('change','#hari_booking', function() {
-        if ($('#lapang_id_booking').val() && $('#hari_booking').val() && $('#start_time_booking').val() && $('#tanggal_mulai_booking').val()) {
-            $.get("{{ route('ketersediaan-booking') }}",{
-                start_time:$(this).val(),
-                paket_id:'{{ $paket->id }}',
-                hari:$('#hari_booking').val(),
-                lapang_id:$('#lapang_id_booking').val(),
-                tanggal_mulai:$('#tanggal_mulai_booking').val()
-            },function(res){
-                console.log('res', res);
-                document.getElementById("end_time_booking").value = res.end_time;
-                if (res.status == true) {
-                    $('#alert_booking').show();
-                    $('#ajukan_booking').hide();
-                }else{
-                    if ($('#start_time_booking').val() && $('#hari_booking').val() && $('#lapang_id_booking').val() && $('#tanggal_mulai_booking').val()) {
+                    if ($('#start_time_booking').val() && $('#lapang_id_booking').val() && $('#tanggal_mulai_booking').val()) {
                         $('#ajukan_booking').show();
                     }
                     $('#alert_booking').hide();
@@ -307,9 +278,9 @@
     });
 
     $(document).on('change','#tanggal_mulai_booking', function() {
-        if ($('#lapang_id_booking').val() && $('#hari_booking').val() && $('#start_time_booking').val() && $('#tanggal_mulai_booking').val()) {
+        if ($('#lapang_id_booking').val() && $('#start_time_booking').val() && $('#tanggal_mulai_booking').val()) {
             $.get("{{ route('ketersediaan-booking') }}",{
-                start_time:$(this).val(),
+                start_time:$('#start_time_booking').val(),
                 paket_id:'{{ $paket->id }}',
                 hari:$('#hari_booking').val(),
                 lapang_id:$('#lapang_id_booking').val(),
@@ -321,7 +292,7 @@
                     $('#alert_booking').show();
                     $('#ajukan_booking').hide();
                 }else{
-                    if ($('#start_time_booking').val() && $('#hari_booking').val() && $('#lapang_id_booking').val() && $('#tanggal_mulai_booking').val()) {
+                    if ($('#start_time_booking').val() && $('#lapang_id_booking').val() && $('#tanggal_mulai_booking').val()) {
                         $('#ajukan_booking').show();
                     }
                     $('#alert_booking').hide();
@@ -340,15 +311,17 @@
                 paket_id:'{{ $paket->id }}',
                 hari:$('#hari').val(),
                 lapang_id:$('#lapang_id').val(),
+                jumlah_bulan:$('#jumlah_bulan').val(),
                 tanggal_mulai:$('#tanggal_mulai').val()
             },function(res){
                 console.log('res', res);
                 document.getElementById("end_time").value = res.end_time;
+                document.getElementById("total_bayar_member").value = res.total_bayar;
                 if (res.status == true) {
                     $('#alert').show();
                     $('#ajukan').hide();
                 }else{
-                    if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val()) {
+                    if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val() && $('#jumlah_bulan').val()) {
                         $('#ajukan').show();
                     }
                     $('#alert').hide();
@@ -364,15 +337,41 @@
                 paket_id:'{{ $paket->id }}',
                 hari:$('#hari').val(), 
                 lapang_id:$('#lapang_id').val(),
+                jumlah_bulan:$('#jumlah_bulan').val(),
                 tanggal_mulai:$('#tanggal_mulai').val()
             },function(res){
                 console.log('res', res);
-                document.getElementById("end_time").value = res.end_time;
                 if (res.status == true) {
                     $('#alert').show();
                     $('#ajukan').hide();
                 }else{
-                    if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val()) {
+                    if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val() && $('#jumlah_bulan').val()) {
+                        $('#ajukan').show();
+                    }
+                    $('#alert').hide();
+                }
+            },'json');
+        }
+    });
+
+    $(document).on('change','#jumlah_bulan', function() {
+        if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val()) {
+            $.get("{{ route('get-end-time') }}",{
+                start_time:$('#start_time').val(),
+                paket_id:'{{ $paket->id }}',
+                hari:$('#hari').val(), 
+                lapang_id:$('#lapang_id').val(),
+                jumlah_bulan:$('#jumlah_bulan').val(),
+                tanggal_mulai:$('#tanggal_mulai').val()
+            },function(res){
+                console.log('res', res);
+                document.getElementById("tanggal_selesai").value = res.end_date;
+                document.getElementById("total_bayar_member").value = res.total_bayar;
+                if (res.status == true) {
+                    $('#alert').show();
+                    $('#ajukan').hide();
+                }else{
+                    if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val() && $('#jumlah_bulan').val()) {
                         $('#ajukan').show();
                     }
                     $('#alert').hide();
@@ -383,20 +382,21 @@
 
     $(document).on('change','#tanggal_mulai', function() {
         if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val()) {
-            $.get("{{ route('get-end-date') }}",{
+            $.get("{{ route('get-end-time') }}",{
                 start_time:$('#start_time').val(),
                 paket_id:'{{ $paket->id }}',
                 hari:$('#hari').val(), 
                 lapang_id:$('#lapang_id').val(),
+                jumlah_bulan:$('#jumlah_bulan').val(),
                 tanggal_mulai:$('#tanggal_mulai').val()
             },function(res){
-                console.log('res', res);
                 document.getElementById("tanggal_selesai").value = res.end_date;
+                document.getElementById("total_bayar_member").value = res.total_bayar;
                 if (res.status == true) {
                     $('#alert').show();
                     $('#ajukan').hide();
                 }else{
-                    if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val()) {
+                    if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val() && $('#jumlah_bulan').val()) {
                         $('#ajukan').show();
                     }
                     $('#alert').hide();
@@ -412,15 +412,15 @@
                 paket_id:'{{ $paket->id }}',
                 hari:$('#hari').val(),
                 lapang_id:$('#lapang_id').val(),
+                jumlah_bulan:$('#jumlah_bulan').val(),
                 tanggal_mulai:$('#tanggal_mulai').val()
             },function(res){
                 console.log('res', res);
-                document.getElementById("end_time").value = res.end_time;
                 if (res.status == true) {
                     $('#alert').show();
                     $('#ajukan').hide();
                 }else{
-                    if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val()) {
+                    if ($('#start_time').val() && $('#hari').val() && $('#lapang_id').val() && $('#tanggal_mulai').val() && $('#jumlah_bulan').val()) {
                         $('#ajukan').show();
                     }
                     $('#alert').hide();
