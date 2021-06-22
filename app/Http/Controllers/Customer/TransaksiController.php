@@ -17,7 +17,19 @@ class TransaksiController extends Controller
 	{
 		$title = 'Daftar Transaksi';
 		$transaksi = Booking::where('user_id', auth()->user()->id)->orderBy('id', 'DESC')->get();
-		return view('pages.customer.transaksi', compact('transaksi','title'));
+		$diklatDone = Booking::join('paket', 'paket.id', '=', 'booking.paket_id')
+								->where('paket.for_use', 'diklat')
+								->where('user_id', auth()->user()->id)
+								->where('status', 2)->orderBy('booking.id', 'DESC')
+								->get();
+
+		if (count($diklatDone) > 0) {
+			$isNewDiklat = false;
+		}else{
+			$isNewDiklat = true;
+		}
+
+		return view('pages.customer.transaksi', compact('transaksi','title','isNewDiklat'));
 	}
 
     public function beliPaket(Request $request, $id)
@@ -210,7 +222,7 @@ class TransaksiController extends Controller
 					'tanggal_selesai' => $request->tanggal_selesai,
 					'jam_mulai' => $jam_mulai,
 					'jam_selesai' => $jam_selesai,
-					'jumlah_hari' => $paket->jumlah_hari,
+					'jumlah_hari' => $jumlah_bulan*30,
 					'keterangan' => NULL,
 					'harga' => $harga,
 					'status' => 0,
@@ -256,7 +268,7 @@ class TransaksiController extends Controller
 					'tanggal_selesai' => $request->tanggal_selesai,
 					'jam_mulai' => $jam_mulai,
 					'jam_selesai' => $jam_selesai,
-					'jumlah_hari' => $paket->jumlah_hari,
+					'jumlah_hari' => $jumlah_bulan*30,
 					'keterangan' => NULL,
 					'harga' => $harga,
 					'status' => 0,
@@ -307,17 +319,33 @@ class TransaksiController extends Controller
 					'bukti_pembayaran' => NULL,
 					'is_member' => false,
 				]);
+
+				$pembayaran = Pembayaran::create([
+					'booking_id' => $booking->id
+				]);
 			}
 
 			// return redirect()->route('transaksi')->with('msg',['type'=>'success','text'=>'Booking berhasil diajukan!']);
 		}
 		$title = 'Info Pembayaran';
-		return view('pages.customer.info_pembayaran', compact('booking','title'));
+		$diklatDone = Booking::join('paket', 'paket.id', '=', 'booking.paket_id')
+								->where('paket.for_use', 'diklat')
+								->where('user_id', auth()->user()->id)
+								->where('status', 2)->orderBy('booking.id', 'DESC')
+								->get();
+
+		if (count($diklatDone) > 0) {
+			$isNewDiklat = false;
+		}else{
+			$isNewDiklat = true;
+		}
+		return view('pages.customer.info_pembayaran', compact('booking','title','isNewDiklat'));
 	}
 
-	public function upload(Request $request)
+	public function upload(Request $request, $id)
 	{
-		$transaksi = Booking::where('id', $request->id)->first();
+		$pembayaran = Pembayaran::where('id', $id)->first();
+		$transaksi = Booking::where('id', $pembayaran->booking_id)->first();
 
 		$path_bukti = $transaksi->bukti_pembayaran;
 
@@ -325,14 +353,42 @@ class TransaksiController extends Controller
 			$image      = $request->file('bukti_pembayaran');
 			$fileName   = 'bukti_'.auth()->user()->hashid.'.' . $image->getClientOriginalExtension();
 			$request->file('bukti_pembayaran')->storeAs('/bukti_pembayaran',$fileName,'public');
-			\File::delete(storage_path('app/public/bukti_pembayaran/'.$transaksi->bukti_pembayaran));
+			\File::delete(storage_path('app/public/bukti_pembayaran/'.$pembayaran->bukti_pembayaran));
 			$path_bukti = $fileName;
 		}
 
-		$transaksi->bukti_pembayaran = $path_bukti;
-		$transaksi->update();
+		$pembayaran->bukti_pembayaran = $path_bukti;
+		$pembayaran->update();
 
 		return redirect()->route('transaksi')->with('msg', ['type' => 'success', 'text' => 'Bukti Pembayaran Berhasil dikirim !']);
+	}
+
+	public function infoPembayaranUpdate(Request $request, $id)
+	{
+		$transaksi = Booking::where('id', $id)->first();
+
+		$transaksi->kategori_pembayaran = $request->has('kategori_pembayaran') == true ? '1' : '0';
+		$transaksi->update();
+
+		return redirect()->route('transaksi')->with('msg', ['type' => 'success', 'text' => 'Metode Pembayaran Berhasil dikirim !']);
+	}
+
+	public function formPembayaran(Request $request, $id)
+	{
+		$title = 'Form Pembayaran';
+		$booking = Booking::where('id', $id)->first();
+		$diklatDone = Booking::join('paket', 'paket.id', '=', 'booking.paket_id')
+								->where('paket.for_use', 'diklat')
+								->where('user_id', auth()->user()->id)
+								->where('status', 2)->orderBy('booking.id', 'DESC')
+								->get();
+
+		if (count($diklatDone) > 0) {
+			$isNewDiklat = false;
+		}else{
+			$isNewDiklat = true;
+		}
+		return view('pages.customer.form_pembayaran', compact('booking','title','isNewDiklat'));
 	}
 
 	public function delete($id)

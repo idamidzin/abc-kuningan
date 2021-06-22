@@ -27,6 +27,8 @@ class Booking extends Model
 		'status',
 		'diskon',
 		'bukti_pembayaran',
+		'status_pembayaran',
+		'kategori_pembayaran',
 		'is_member',
 	];
 
@@ -52,4 +54,13 @@ class Booking extends Model
 		return $this->belongsTo( Lapang::class, 'lapang_id' );
 	}
 	
+	public function Pembayaran()
+	{
+		return $this->hasMany( Pembayaran::class );
+	}
+
+	public function PembayaranLimit()
+	{
+		return $this->hasMany( Pembayaran::class )->limit(1);
+	}
 }

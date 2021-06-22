@@ -32,6 +32,7 @@ class CreateBookingTable extends Migration
             $table->string('diskon', 70)->nullable();
             $table->string('bukti_pembayaran')->nullable();
             $table->boolean('status_pembayaran')->default(0)->nullable();
+            $table->string('kategori_pembayaran', 1)->nullable();
             $table->boolean('is_member')->nullable();
             $table->timestamps();
             $table->softDeletes();

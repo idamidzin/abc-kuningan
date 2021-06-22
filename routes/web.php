@@ -169,7 +169,7 @@ Route::group(['middleware' => ['auth.user']], function () {
 
 	Route::get('/transaksi', 'Customer\TransaksiController@index')->name('transaksi');
 	Route::delete('/transaksi/delete/{id}', 'Customer\TransaksiController@delete')->name('transaksi.delete');
-	Route::post('/upload-bukti', 'Customer\TransaksiController@upload')->name('upload.bukti');
+	Route::put('/upload-bukti/{id}', 'Customer\TransaksiController@upload')->name('upload.bukti');
 
 	Route::get('/paket-beli/{id}', 'Customer\TransaksiController@beliPaket')->name('paket.beli');
 	Route::get('/ketersediaan-booking', 'Customer\TransaksiController@getKetersediaanBooking')->name('ketersediaan-booking');
@@ -178,6 +178,8 @@ Route::group(['middleware' => ['auth.user']], function () {
 	Route::get('/cek-tanggal-berakhir-diklat', 'Customer\TransaksiController@cekTanggalBerakhirDiklat')->name('cek-tanggal-berakhir-diklat');
 	Route::post('/booking', 'Customer\TransaksiController@booking')->name('booking');
 	Route::post('/info-pembayaran', 'Customer\TransaksiController@infoPembayaran')->name('info-pembayaran');
+	Route::get('/form-pembayaran/{id}', 'Customer\TransaksiController@formPembayaran')->name('form-pembayaran');
+	Route::put('/info-pembayaran-update/{id}', 'Customer\TransaksiController@infoPembayaranUpdate')->name('info-pembayaran-update');
 
 	Route::get('/jadwal', 'Customer\JadwalController@index')->name('jadwal');
 });

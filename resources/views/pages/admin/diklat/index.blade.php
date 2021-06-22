@@ -115,17 +115,31 @@
 								{{ date('H:i', strtotime('+'.menitKeJam($row->Paket->jumlah_jam*60).' hours', strtotime($row->jam_mulai))) }}
 							</td>
 							<td class="text-center">
-								@if($row->bukti_pembayaran)
-									<a href="{{ asset('storage/bukti_pembayaran/'.$row->bukti_pembayaran) }}" target="_blank">
-										<img src="{{ asset('storage/bukti_pembayaran/'.$row->bukti_pembayaran) }}" width="80px">
+								@if($row->Pembayaran)
+									@if($row->kategori_pembayaran == '0')
+									@foreach($row->PembayaranLimit as $bukti)
+									<a href="{{ asset('storage/bukti_pembayaran/'.$bukti->bukti_pembayaran) }}" target="_blank" class="img-pop-up">
+										@if($bukti->bukti_pembayaran)
+										Pembayaran Lunas
+										@endif
 									</a>
+									@endforeach
+									@else
+									@foreach($row->Pembayaran as $bukti)
+									<a href="{{ asset('storage/bukti_pembayaran/'.$bukti->bukti_pembayaran) }}" target="_blank" class="img-pop-up">
+										@if($bukti->bukti_pembayaran)
+										<li>Pembayaran Bulan {{ $loop->iteration }}</li>
+										@endif
+									</a>
+									@endforeach
+									@endif
 								@else
 								@endif
 							</td>
 							<td class="text-center" width="100px">
 								@if($row->deleted_at == null)
 									@if($row->status == 0)
-									@if($row->bukti_pembayaran)
+									@if($row->Pembayaran)
 									<a href="{{ route('admin.member.proses', $row->hashid) }}?param=1" class="btn btn-primary btn-sm">
 										Terima
 									</a>
