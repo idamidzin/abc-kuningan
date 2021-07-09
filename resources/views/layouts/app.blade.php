@@ -56,13 +56,6 @@
           },typeof delay !== 'undefined' ? parseInt(delay) : 6000);
         }
 
-    //     var rupiah = document.getElementById('rupiah');
-    // rupiah.addEventListener('keyup', function(e){
-    //   // tambahkan 'Rp.' pada saat form di ketik
-    //   // gunakan fungsi formatRupiah() untuk mengubah angka yang di ketik menjadi format angka
-    //   rupiah.value = formatRupiah(this.value, 'Rp.');
-    // });
-
       });
 
       function hanyaAngka(evt) {

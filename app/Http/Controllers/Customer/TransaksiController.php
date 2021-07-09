@@ -109,29 +109,25 @@ class TransaksiController extends Controller
 		$end_date = date('Y-m-d', strtotime('+'.$paket->jumlah_hari.' days', strtotime($request->tanggal_mulai)));
 		$hari = numberToDay(date('N', strtotime($request->tanggal_mulai)));
 
-		$cek_booking = Booking::whereRaw('? between tanggal_mulai and tanggal_selesai',[$request->tanggal_mulai])
-								->where('lapang_id', $request->lapang_id)
-								->whereRaw('? between jam_mulai and jam_selesai',[date('H:i:s', strtotime($request->start_time))])
-								->orWhereRaw('? between jam_mulai and jam_selesai',[$end_time])
+		$tanggal_mulai = date('Y-m-d', strtotime($request->tanggal_mulai));
+		$start_time = date('H:i:s', strtotime($request->start_time));
+
+		$cek_booking = Booking::where('lapang_id', $request->lapang_id)
+								->whereIn('status', [0,1])
+								->where(function($query) use ($tanggal_mulai, $end_date){
+									$query->whereRaw('? between tanggal_mulai and tanggal_selesai',[$tanggal_mulai]);
+									$query->orWhereRaw('? between tanggal_mulai and tanggal_selesai',[$end_date]);
+								})
+								->where(function($query) use ($start_time, $end_time){
+									$query->whereRaw('? between jam_mulai and jam_selesai',[$start_time]);
+									$query->orWhereRaw('? between jam_mulai and jam_selesai',[$end_time]);
+								})
 								->get();
 
 		$cek_jadwal = Jadwal::where('lapang_id', $request->lapang_id)
 								->where('hari', $hari)
 								->whereRaw('? between jam_mulai and jam_selesai',[date('H:i:s', strtotime($request->start_time)), $end_time])
 								->get();
-
-		// $data = [];
-		// foreach ($cek_booking as $row) {
-		// 	$data[] = [
-		// 		'hari' => $row->hari,
-		// 		'tanggal_mulai' => $row->tanggal_mulai,
-		// 		'tanggal_selesai' => $row->tanggal_selesai,
-		// 		'jam_mulai' => $row->jam_mulai,
-		// 		'jam_selesai' => $row->jam_selesai
-		// 	];
-		// }
-
-		// dd($cek_jadwal);
 
 		if (count($cek_booking) > 0 || count($cek_jadwal) > 0) {
 			$status = true;

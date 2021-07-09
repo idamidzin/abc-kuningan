@@ -22,6 +22,17 @@ Route::bind('id', function ( $id ) {
 Route::get('/storage-link', function() {
 	$exitCode = Artisan::call('storage:link');
 });
+
+Route::get('/migrate-refresh', function(){
+    $exit = Artisan::call('migrate:refresh',['--seed' => ' ']);
+    return 'ok';
+});
+
+Route::get('/wipe', function(){
+    $exit = Artisan::call('db:wipe');
+    return 'ok';
+});
+
 Route::get('/clear', function() {
     $exitCode = Artisan::call('cache:clear');
     $exitCode = Artisan::call('view:clear');
@@ -123,6 +134,15 @@ Route::group(['middleware' => ['auth.admin'], 'prefix' => 'admin', 'as' => 'admi
 	Route::patch('diklat/delete/{id}', 'DiklatController@delete')->name('diklat.delete');
 	Route::delete('diklat/delete/{id}', 'DiklatController@destroy')->name('diklat.destroy');
 	Route::post('diklat/restore/{id}', 'DiklatController@restore')->name('diklat.restore');
+
+	/*
+	|--------------------------------------------------------------------------
+	| Laporan Routes
+	|--------------------------------------------------------------------------
+	|
+	*/
+	Route::get('laporan', 'LaporanController@index')->name('laporan.index');
+	Route::post('laporan/cetak', 'LaporanController@cetak')->name('laporan.cetak');
 
 	/*
 	Route::get('booking/create', 'BookingController@create')->name('booking.create');

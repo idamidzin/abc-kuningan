@@ -1,5 +1,19 @@
 <?php
 
+if (!function_exists('rupiah')) {
+
+    /**
+     * convert string date system to string date indo
+     *
+     * @param string
+     * @return string
+     */
+    function rupiah($string)
+    {
+        return number_format($string,2,",",".");
+    }
+}
+
 if (!function_exists('tanggalIndo')) {
 
     /**

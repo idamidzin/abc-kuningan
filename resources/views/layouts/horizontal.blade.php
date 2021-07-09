@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="{{ asset('customer/css/ion.rangeSlider.skinFlat.css') }}"/>
     <link rel="stylesheet" href="{{ asset('customer/css/magnific-popup.css') }}"/>
     <link rel="stylesheet" href="{{ asset('customer/css/main.css') }}"/>
+    @yield('styles')
 </head>
 
 <body>

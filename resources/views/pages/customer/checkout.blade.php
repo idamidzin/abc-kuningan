@@ -2,6 +2,7 @@
 @section('content')
 
 @include('layouts.particals.common-banner')
+
 <!--================Single Product Area =================-->
 <div class="container">
     <div class="row">
