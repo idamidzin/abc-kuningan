@@ -5,27 +5,31 @@
 <link href="{{ asset('assets/packages/core/main.css') }}" rel='stylesheet' />
 <link href="{{ asset('assets/packages/daygrid/main.css') }}" rel='stylesheet' />
 <script src="{{ asset('assets/packages/core/main.js') }}"></script>
+<link href="{{ asset('assets/packages/list/main.css') }}" rel='stylesheet' />
 <script src="{{ asset('assets/packages/interaction/main.js') }}"></script>
 <script src="{{ asset('assets/packages/daygrid/main.js') }}"></script>
+<script src="{{ asset('assets/packages/core/locales-all.js') }}"></script>
+<script src="{{ asset('assets/packages/list/main.js') }}"></script>
 <script>
-
 
     document.addEventListener('DOMContentLoaded', function() {
 
         var calendarEl = document.getElementById('calendar');
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            plugins: [ 'interaction', 'dayGrid' ],
+            plugins: [ 'interaction', 'dayGrid','list' ],
             header: {
                 left: 'prevYear, prev, next, nextYear today',
                 center: 'title',
-                right: 'dayGridMonth,dayGridWeek,dayGridDay'
+                right: 'dayGridMonth,dayGridWeek,dayGridDay,listMonth'
             },
             defaultDate: '{{ $tgl_default }}',
             locale: 'id',
+            allDaySlot: false,
             navLinks: true, // can click day/week names to navigate views
             editable: false,
             eventLimit: true, // allow "more" link when too many events
+            eventTextColor: "white",
             events: [
                 @foreach($data_member as $row)
                 {
@@ -41,15 +45,10 @@
                     end : '{{ $row->start }}',
                 },
                 @endforeach
-                @foreach($data_diklat as $date)
                 {
-                    @if(numberToDay($date->format("N")) == 'minggu')
-                    title : '{{ "Pelatihan Diklat" }} \n08:00sd12:00\nSemua Lapang',
-                    start : '{{ $date->format("Y-m-d") }}',
-                    end: '{{ $date->format("Y-m-d") }}',
-                    @endif
+                    title:'{{ "Pelatihan Diklat" }} \n08:00sd12:00\nSemua Lapang',
+                    daysOfWeek: [ '0' ],
                 },
-                @endforeach
             ]
         });
         calendar.render();
@@ -58,17 +57,13 @@
 </script>
 <style>
 
-    body {
-        margin: 40px 10px;
-        padding: 0;
-        color: black;
-        font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-        font-size: 14px;
-    }
-
     #calendar {
         max-width: 900px;
         margin: 0 auto;
+    }
+
+    .fc-list-item-time {
+        display:none;
     }
 
 </style>

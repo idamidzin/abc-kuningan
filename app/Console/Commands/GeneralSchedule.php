@@ -12,7 +12,7 @@ class GeneralSchedule extends Command
      *
      * @var string
      */
-    protected $signature = 'command:scheduler';
+    protected $signature = 'pengingat:jadwal';
 
     /**
      * The console command description.
@@ -38,7 +38,38 @@ class GeneralSchedule extends Command
      */
     public function handle()
     {
-        $booking_selesai = Booking::where('tanggal_selesai', date('Y-m-d'))->get();
-        dd($booking_selesai);
+        $now = \Carbon\Carbon::now();
+        $hari = numberToDay($now->format('N'));
+
+        $jam_mulai = date('H:i:s', strtotime('+60 minutes'));
+
+        $booking = Booking::where('hari', $hari)
+                                ->where('status', 1)
+                                ->whereRaw('? between tanggal_mulai and tanggal_selesai',[date('Y-m-d')])
+                                ->where('jam_mulai','<=',$jam_mulai)
+                                ->get();
+
+        $sucessSentToUser = 0;
+
+        foreach ($booking as $row) {
+
+            $to_name = $row->User->nama_lengkap;
+            $to_email = $row->User->email;
+            $nama_paket = $row->Paket->nama;
+
+            $data = array(
+                'name'=> $row->User->nama_lengkap, 
+                'lapang' => $row->Lapang->nama, 
+                'waktu' => date('H:i', strtotime($row->jam_mulai)).' sd '.date('H:i', strtotime($row->jam_selesai))
+            );
+
+            \Mail::send('pengingat_jadwal', $data, function($message) use ($to_name, $to_email, $nama_paket) {
+                $message->to($to_email, $to_name)->subject('Pengingat Jadwal '.$nama_paket);
+                $message->from('artostechnopay@gmail.com','Anrimusthi Badminton Centre Kuningan');
+            });
+            $sucessSentToUser++;
+        }
+
+        $this->info('Pengingat:jadwal Command Run Successfully!');
     }
 }
